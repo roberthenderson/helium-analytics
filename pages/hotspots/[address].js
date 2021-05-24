@@ -1,6 +1,6 @@
 import { useRouter } from "next/router";
 import animalHash from "angry-purple-tiger";
-import LineChart from "../../components/Charts/LineChart";
+import RewardsChart from "../../components/Charts/RewardsChart";
 
 const Hotspot = ({ rewards }) => {
     const router = useRouter();
@@ -16,7 +16,11 @@ const Hotspot = ({ rewards }) => {
         <>
             <p>Address: {address}</p>
             <p>Name: {name}</p>
-            <LineChart dataSetData={lineChartData} dataLabels={dataLabels} />
+            <RewardsChart
+                type="line"
+                dataSetData={lineChartData}
+                dataLabels={dataLabels}
+            />
         </>
     );
 };
