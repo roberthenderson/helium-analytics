@@ -9,7 +9,7 @@ const Hotspot = ({ rewards }) => {
         ? animalHash(address)
         : "Failed to get hotspot address";
     console.log(name, rewards);
-    const lineChartData = rewards.incrementingRewards;
+    const lineChartData = rewards.incrementedRewards;
     const dataLabels = rewards.datesInOrder;
 
     return (
@@ -21,68 +21,42 @@ const Hotspot = ({ rewards }) => {
     );
 };
 
-async function getHotspotRewards(
-    address,
-    prevRewards = { incrementingRewards: [], datesInOrder: [] },
-    cursorStr
-) {
+async function getHotspotRewards(address, prevRawRewards = [], cursorStr) {
     if (cursorStr === null) {
-        return prevRewards;
+        return incrementRewards(prevRawRewards);
     }
     let cursor = "";
     if (cursorStr) {
         cursor = `&cursor=${cursorStr}`;
     }
     const res = await fetch(
-        `https://api.helium.io/v1/hotspots/${address}/rewards?max_time=2021-05-22&min_time=2021-05-01${cursor}`
+        `https://api.helium.io/v1/hotspots/${address}/rewards?max_time=2021-05-24&min_time=2021-05-17${cursor}`
     );
     const rawRewards = await res.json();
-    const lastAmount = getLastAmount(prevRewards.incrementingRewards);
-    const formattedRewardsData = formatRewardsData(rawRewards.data, lastAmount);
-    const rewards = concatFormattedRewardsData(
-        prevRewards,
-        formattedRewardsData
-    );
+    const rewards = prevRawRewards.concat(rawRewards.data);
     return await getHotspotRewards(address, rewards, rawRewards.cursor || null);
 }
 
-function formatRewardsData(rewardsData, lastAmount) {
+function incrementRewards(rawRewards) {
     const conversion = 0.00000001;
     let formattedRewardsData = {
-        incrementingRewards: [],
+        incrementedRewards: [],
         datesInOrder: [],
     };
-    rewardsData.forEach((block, index) => {
-        const prevIndex = index - 1;
-        const prevTotal =
-            prevIndex > -1
-                ? formattedRewardsData.incrementingRewards[prevIndex]
-                : lastAmount;
-        const amountHnt = block.amount * conversion + prevTotal;
-        formattedRewardsData.incrementingRewards.push(amountHnt);
+    // Most recent rewards are first, so we need to loop backwards
+    for (let i = rawRewards.length - 1; i >= 0; i--) {
+        const amount = rawRewards[i].amount;
+        const prevAmount =
+            formattedRewardsData.incrementedRewards[
+                formattedRewardsData.incrementedRewards.length - 1
+            ] || 0;
+        const amountHnt = amount * conversion + prevAmount;
+        formattedRewardsData.incrementedRewards.push(amountHnt);
         formattedRewardsData.datesInOrder.push(
-            formatTimeStamp(block.timestamp)
+            formatTimeStamp(rawRewards[i].timestamp)
         );
-    });
-    return formattedRewardsData;
-}
-
-function concatFormattedRewardsData(prevRewards, formattedRewardsData) {
-    return {
-        incrementingRewards: prevRewards.incrementingRewards.concat(
-            formattedRewardsData.incrementingRewards
-        ),
-        datesInOrder: prevRewards.datesInOrder.concat(
-            formattedRewardsData.datesInOrder
-        ),
-    };
-}
-
-function getLastAmount(incrementingRewards) {
-    if (incrementingRewards.length === 0) {
-        return 0;
     }
-    return incrementingRewards[incrementingRewards.length - 1];
+    return formattedRewardsData;
 }
 
 function formatTimeStamp(timestamp) {
