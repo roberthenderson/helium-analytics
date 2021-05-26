@@ -2,20 +2,46 @@ import { useRouter } from "next/router";
 import animalHash from "angry-purple-tiger";
 import RewardsChart from "../../components/Charts/RewardsChart";
 
-const Hotspot = ({ rewards }) => {
+const BONES_TO_HNT_CONVERSION = 0.00000001;
+const Hotspot = ({ rewardsGrowth, totalRewards, accountTotal }) => {
     const router = useRouter();
     const { address } = router.query;
     const name = address
         ? animalHash(address)
         : "Failed to get hotspot address";
-    console.log(name, rewards);
-    const lineChartData = rewards.incrementedRewards;
-    const dataLabels = rewards.datesInOrder;
+    console.log(name, rewardsGrowth);
+    const lineChartData = rewardsGrowth.incrementedRewards;
+    const dataLabels = rewardsGrowth.datesInOrder;
+
+    //temp data printed
+    const split = 0.5;
+    const rewardsAfterSplit = totalRewards * split;
+    const rewardsNotInAccountYet = rewardsAfterSplit - accountTotal;
 
     return (
         <>
-            <p>Address: {address}</p>
-            <p>Name: {name}</p>
+            <p>
+                Hotspot Address: <strong>{address}</strong>
+            </p>
+            <p>
+                Name: <strong>{name}</strong>
+            </p>
+            <p>
+                Hotspot Rewards all time: <strong>{totalRewards}</strong>
+            </p>
+            <p>
+                Rewards Split: <strong>50%</strong>
+            </p>
+            <p>
+                Rewards after split: <strong>{rewardsAfterSplit}</strong>
+            </p>
+            <p>
+                Total currently in account: <strong>{accountTotal}</strong>
+            </p>
+            <p>
+                Rewards yet to be paid:{" "}
+                <strong>{rewardsNotInAccountYet}</strong>
+            </p>
             <RewardsChart
                 type="line"
                 dataSetData={lineChartData}
@@ -25,7 +51,11 @@ const Hotspot = ({ rewards }) => {
     );
 };
 
-async function getHotspotRewards(address, prevRawRewards = [], cursorStr) {
+async function getHotspotRewardsGrowth(
+    address,
+    prevRawRewards = [],
+    cursorStr
+) {
     if (cursorStr === null) {
         return incrementRewards(prevRawRewards);
     }
@@ -34,15 +64,34 @@ async function getHotspotRewards(address, prevRawRewards = [], cursorStr) {
         cursor = `&cursor=${cursorStr}`;
     }
     const res = await fetch(
-        `https://api.helium.io/v1/hotspots/${address}/rewards?max_time=2021-05-24&min_time=2021-05-17${cursor}`
+        `https://api.helium.io/v1/hotspots/${address}/rewards?max_time=2021-05-25&min_time=2021-05-17${cursor}`
     );
     const rawRewards = await res.json();
     const rewards = prevRawRewards.concat(rawRewards.data);
-    return await getHotspotRewards(address, rewards, rawRewards.cursor || null);
+    return await getHotspotRewardsGrowth(
+        address,
+        rewards,
+        rawRewards.cursor || null
+    );
+}
+
+async function getTotalHotspotRewards(address) {
+    const res = await fetch(
+        `https://api.helium.io/v1/hotspots/${address}/rewards/sum?max_time=2021-05-25&min_time=2020-01-01`
+    );
+    const rawRewards = await res.json();
+    return rawRewards.data.total;
+}
+
+async function getAccountBalance(address) {
+    const conversion = BONES_TO_HNT_CONVERSION;
+    const res = await fetch(`https://api.helium.io/v1/accounts/${address}`);
+    const rawRewards = await res.json();
+    return rawRewards.data.balance * conversion;
 }
 
 function incrementRewards(rawRewards) {
-    const conversion = 0.00000001;
+    const conversion = BONES_TO_HNT_CONVERSION;
     let formattedRewardsData = {
         incrementedRewards: [],
         datesInOrder: [],
@@ -69,14 +118,23 @@ function formatTimeStamp(timestamp) {
 }
 
 // This function gets called at build time
-export async function getServerSideProps({ params }) {
-    const address = params.address;
-    const rewards = await getHotspotRewards(address);
-    console.log("rewards:", address, rewards);
+export async function getServerSideProps({ query }) {
+    debugger;
+    const hotspotAddress = query.address;
+    const accountAddress = query.account;
+    const [rewardsGrowth, totalRewards, accountTotal] = await Promise.all([
+        getHotspotRewardsGrowth(hotspotAddress),
+        getTotalHotspotRewards(hotspotAddress),
+        getAccountBalance(accountAddress),
+    ]);
+
+    console.log("rewards:", hotspotAddress, rewardsGrowth);
 
     return {
         props: {
-            rewards,
+            rewardsGrowth,
+            totalRewards,
+            accountTotal,
         },
     };
 }
