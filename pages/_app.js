@@ -1,7 +1,32 @@
-import "../styles/globals.css";
+import React, { useState } from "react";
+import Router from "next/router";
+import Head from "next/head";
+import Loading from "../components/Global/Loading";
+import Layout from "../components/Global/Layout";
+import "../styles/globals.scss";
 
-function MyApp({ Component, pageProps }) {
-    return <Component {...pageProps} />;
+function HeliumAnalytics({ Component, pageProps }) {
+    const [loading, setLoading] = useState(false);
+
+    Router.events.on("routeChangeStart", () => {
+        setLoading(true);
+    });
+    Router.events.on("routeChangeComplete", () => {
+        setLoading(false);
+    });
+
+    return (
+        <>
+            <Head>
+                <title>Helium Analytics</title>
+                <link rel="icon" href="/favicon.ico" />
+            </Head>
+            <Layout {...pageProps}>
+                <Component {...pageProps} />
+            </Layout>
+            {loading && <Loading />}
+        </>
+    );
 }
 
-export default MyApp;
+export default HeliumAnalytics;

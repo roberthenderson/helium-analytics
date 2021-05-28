@@ -1,15 +1,18 @@
 import { useRouter } from "next/router";
 import animalHash from "angry-purple-tiger";
+import Datepicker from "../../components/Actions/Datepicker";
 import RewardsChart from "../../components/Charts/RewardsChart";
 
 const BONES_TO_HNT_CONVERSION = 0.00000001;
-const Hotspot = ({ rewardsGrowth, totalRewards, accountTotal }) => {
+const Hotspot = ({
+    hotspotName,
+    rewardsGrowth,
+    totalRewards,
+    accountTotal,
+}) => {
     const router = useRouter();
     const { address } = router.query;
-    const name = address
-        ? animalHash(address)
-        : "Failed to get hotspot address";
-    console.log(name, rewardsGrowth);
+    console.log(hotspotName, rewardsGrowth);
     const lineChartData = rewardsGrowth.incrementedRewards;
     const dataLabels = rewardsGrowth.datesInOrder;
 
@@ -20,33 +23,49 @@ const Hotspot = ({ rewardsGrowth, totalRewards, accountTotal }) => {
 
     return (
         <>
-            <p>
-                Hotspot Address: <strong>{address}</strong>
-            </p>
-            <p>
-                Name: <strong>{name}</strong>
-            </p>
-            <p>
-                Hotspot Rewards all time: <strong>{totalRewards}</strong>
-            </p>
-            <p>
-                Rewards Split: <strong>50%</strong>
-            </p>
-            <p>
-                Rewards after split: <strong>{rewardsAfterSplit}</strong>
-            </p>
-            <p>
-                Total currently in account: <strong>{accountTotal}</strong>
-            </p>
-            <p>
-                Rewards yet to be paid:{" "}
-                <strong>{rewardsNotInAccountYet}</strong>
-            </p>
-            <RewardsChart
-                type="line"
-                dataSetData={lineChartData}
-                dataLabels={dataLabels}
-            />
+            <div className="flex h-screen overflow-hidden">
+                <div className="relative flex flex-col flex-1 overflow-y-auto overflow-x-hidden">
+                    <main>
+                        <p>
+                            Hotspot Address: <strong>{address}</strong>
+                        </p>
+                        <p>
+                            Name: <strong>{hotspotName}</strong>
+                        </p>
+                        <p>
+                            Hotspot Rewards all time:{" "}
+                            <strong>{totalRewards}</strong>
+                        </p>
+                        <p>
+                            Rewards Split: <strong>50%</strong>
+                        </p>
+                        <p>
+                            Rewards after split:{" "}
+                            <strong>{rewardsAfterSplit}</strong>
+                        </p>
+                        <p>
+                            Total currently in account:{" "}
+                            <strong>{accountTotal}</strong>
+                        </p>
+                        <p>
+                            Rewards yet to be paid:{" "}
+                            <strong>{rewardsNotInAccountYet}</strong>
+                        </p>
+                        <div className="px-4 sm:px-6 lg:px-8 py-8 w-full max-w-9xl mx-auto">
+                            <div className="sm:flex sm:justify-between sm:items-center mb-8">
+                                <div className="grid grid-flow-col sm:auto-cols-max justify-start sm:justify-end gap-2">
+                                    <Datepicker />
+                                </div>
+                            </div>
+                        </div>
+                        <RewardsChart
+                            type="line"
+                            dataSetData={lineChartData}
+                            dataLabels={dataLabels}
+                        />
+                    </main>
+                </div>
+            </div>
         </>
     );
 };
@@ -121,6 +140,9 @@ function formatTimeStamp(timestamp) {
 export async function getServerSideProps({ query }) {
     debugger;
     const hotspotAddress = query.address;
+    const hotspotName = hotspotAddress
+        ? animalHash(hotspotAddress)
+        : "Failed to get hotspot address";
     const accountAddress = query.account;
     const [rewardsGrowth, totalRewards, accountTotal] = await Promise.all([
         getHotspotRewardsGrowth(hotspotAddress),
@@ -132,6 +154,7 @@ export async function getServerSideProps({ query }) {
 
     return {
         props: {
+            hotspotName,
             rewardsGrowth,
             totalRewards,
             accountTotal,
