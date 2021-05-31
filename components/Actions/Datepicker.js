@@ -27,7 +27,7 @@ const Datepicker = () => {
     function getDefaultDateRange() {
         if (!router.query.minDate || !router.query.maxDate) {
             // past week:
-            return [new Date().setDate(new Date().getDate() - 6), new Date()];
+            return [new Date().setDate(new Date().getDate() - 7), new Date()];
         }
         const minDate = router.query.minDate.split("T")[0];
         const maxDate = router.query.maxDate.split("T")[0];

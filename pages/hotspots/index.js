@@ -6,7 +6,7 @@ import animalHash from "angry-purple-tiger";
 function Hotspots({ hotspots }) {
     const router = useRouter();
     const handleChange = (hotspot) => {
-        router.push(`/hotspots/${hotspot.value}`);
+        router.push(`/hotspots/${hotspot.dashed}`);
     };
     return (
         <div>
@@ -33,13 +33,20 @@ function _formatHotspots(rawHotspotsData) {
     let formattedHotspots = [];
     rawHotspotsData.forEach((hotspot) => {
         if (hotspot.address) {
+            let hotspotName = animalHash(hotspot.address);
+            let hotspotDashed = dashHotspotName(hotspotName);
             formattedHotspots.push({
                 label: animalHash(hotspot.address),
+                dashed: hotspotDashed,
                 value: hotspot.address,
             });
         }
     });
     return formattedHotspots;
+}
+
+function dashHotspotName(hotspotName) {
+    return hotspotName.toLowerCase().replaceAll(" ", "-");
 }
 
 // This function gets called at build time
