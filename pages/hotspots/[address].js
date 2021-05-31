@@ -125,17 +125,49 @@ function incrementRewards(rawRewards) {
         const amountHnt = amount * conversion + prevAmount;
         formattedRewardsData.incrementedRewards.push(amountHnt);
         formattedRewardsData.datesInOrder.push(
-            formatTimeStamp(rawRewards[i].timestamp)
+            formatTimeStampForDisplay(rawRewards[i].timestamp)
         );
     }
     return formattedRewardsData;
 }
 
-function formatTimeStamp(timestamp) {
-    const date = new Date(timestamp.slice(0, -1));
+function formatTimeStampForDisplay(timestamp) {
+    const date = new Date(timestamp);
     return `${date.getMonth() + 1}/${date.getDate()}/${date.getFullYear()} ${(
         "0" + date.getHours()
     ).slice(-2)}:${("0" + date.getMinutes()).slice(-2)}`;
+}
+
+function formatDateForAPI(date) {
+    const dateStrMap = {
+        year: date.getFullYear(),
+        month: ("0" + (date.getMonth() + 1)).slice(-2),
+        date: ("0" + date.getDate()).slice(-2),
+        hours: ("0" + date.getHours()).slice(-2),
+        minutes: ("0" + date.getMinutes()).slice(-2),
+        seconds: ("0" + date.getSeconds()).slice(-2),
+    };
+    let dateStr = "";
+    Object.keys(dateStrMap).forEach((key) => {
+        const value = dateStrMap[key];
+        dateStr += value;
+        if (key === "year" || key === "month") {
+            dateStr += "-";
+        }
+        if (key === "date") {
+            dateStr += "T";
+        }
+        if (key === "hours" || key === "minutes") {
+            dateStr += ":";
+        }
+    });
+    return dateStr + ".000000Z";
+}
+
+function convertDateToGMT(dateStr, end) {
+    const timeStr = end ? "23:59:59" : "00:00:00";
+    const date = new Date(`${dateStr} ${timeStr}`);
+    return formatDateForAPI(date);
 }
 
 // This function gets called at build time
@@ -145,8 +177,8 @@ export async function getServerSideProps({ query }) {
         ? animalHash(hotspotAddress)
         : "Failed to get hotspot address";
     const accountAddress = query.account;
-    const minDate = query.minDate;
-    const maxDate = query.maxDate;
+    const minDate = convertDateToGMT(query.minDate);
+    const maxDate = convertDateToGMT(query.maxDate, true);
     const [rewardsGrowth, totalRewards, accountTotal] = await Promise.all([
         getHotspotRewardsGrowth(hotspotAddress, { minDate, maxDate }),
         getTotalHotspotRewards(hotspotAddress, { minDate, maxDate }),

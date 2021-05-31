@@ -49,7 +49,7 @@ const Datepicker = () => {
             if (idx === 1) {
                 key = "maxDate";
             }
-            dateRange[key] = createURLDateString(date, idx === 0);
+            dateRange[key] = createURLDateString(date);
         });
         const newUrlQuery = {
             pathname: router.pathname,
@@ -60,11 +60,10 @@ const Datepicker = () => {
         router.push(newUrlQuery);
     }
 
-    function createURLDateString(date, isMin) {
-        const timestamp = isMin ? "T00:00:00.000000" : "T23:59:59.000000";
+    function createURLDateString(date) {
         return `${date.getFullYear()}-${("0" + (date.getMonth() + 1)).slice(
             -2
-        )}-${("0" + date.getDate()).slice(-2)}${timestamp}`;
+        )}-${("0" + date.getDate()).slice(-2)}`;
     }
 
     return (
