@@ -7,7 +7,7 @@ const RewardsChart = ({ type, dataSetData, dataLabels }) => {
             {
                 label: "Rewards (HNT)",
                 data: dataSetData,
-                fill: false,
+                fill: true,
                 backgroundColor: "rgb(255, 99, 132)",
                 borderColor: "rgba(255, 99, 132, 0.2)",
             },

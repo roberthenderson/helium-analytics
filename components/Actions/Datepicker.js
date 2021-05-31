@@ -1,13 +1,16 @@
 import React from "react";
 import Flatpickr from "react-flatpickr";
+import { useRouter } from "next/router";
 
 const Datepicker = () => {
+    const router = useRouter();
+    const defaultDateRange = getDefaultDateRange();
     const options = {
         mode: "range",
         static: true,
         monthSelectorType: "static",
         dateFormat: "M j, Y",
-        defaultDate: [new Date().setDate(new Date().getDate() - 6), new Date()],
+        defaultDate: defaultDateRange,
         prevArrow:
             '<svg class="fill-current" width="7" height="11" viewBox="0 0 7 11"><path d="M5.4 10.8l1.4-1.4-4-4 4-4L5.4 0 0 5.4z" /></svg>',
         nextArrow:
@@ -17,8 +20,52 @@ const Datepicker = () => {
         },
         onChange: (selectedDates, dateStr, instance) => {
             instance.element.value = dateStr.replace("to", "-");
+            addDatesAsURLParam(selectedDates);
         },
     };
+
+    function getDefaultDateRange() {
+        if (!router.query.minDate || !router.query.maxDate) {
+            // past week:
+            return [new Date().setDate(new Date().getDate() - 6), new Date()];
+        }
+        const minDate = router.query.minDate.split("T")[0];
+        const maxDate = router.query.maxDate.split("T")[0];
+        const dateRange = [
+            new Date(minDate.replaceAll("-", "/")),
+            new Date(maxDate.replaceAll("-", "/")),
+        ];
+
+        return dateRange;
+    }
+
+    function addDatesAsURLParam(selectedDates) {
+        if (selectedDates.length === 1) {
+            return;
+        }
+        const dateRange = {};
+        selectedDates.forEach((date, idx) => {
+            let key = "minDate";
+            if (idx === 1) {
+                key = "maxDate";
+            }
+            dateRange[key] = createURLDateString(date, idx === 0);
+        });
+        const newUrlQuery = {
+            pathname: router.pathname,
+            query: router.query,
+        };
+        newUrlQuery.query.minDate = dateRange.minDate;
+        newUrlQuery.query.maxDate = dateRange.maxDate;
+        router.push(newUrlQuery);
+    }
+
+    function createURLDateString(date, isMin) {
+        const timestamp = isMin ? "T00:00:00.000000" : "T23:59:59.000000";
+        return `${date.getFullYear()}-${("0" + (date.getMonth() + 1)).slice(
+            -2
+        )}-${("0" + date.getDate()).slice(-2)}${timestamp}`;
+    }
 
     return (
         <>

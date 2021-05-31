@@ -33,7 +33,7 @@ const Hotspot = ({
                             Name: <strong>{hotspotName}</strong>
                         </p>
                         <p>
-                            Hotspot Rewards all time:{" "}
+                            Hotspot Rewards for date range:{" "}
                             <strong>{totalRewards}</strong>
                         </p>
                         <p>
@@ -47,10 +47,10 @@ const Hotspot = ({
                             Total currently in account:{" "}
                             <strong>{accountTotal}</strong>
                         </p>
-                        <p>
+                        {/* <p>
                             Rewards yet to be paid:{" "}
                             <strong>{rewardsNotInAccountYet}</strong>
-                        </p>
+                        </p> */}
                         <div className="px-4 sm:px-6 lg:px-8 py-8 w-full max-w-9xl mx-auto">
                             <div className="sm:flex sm:justify-between sm:items-center mb-8">
                                 <div className="grid grid-flow-col sm:auto-cols-max justify-start sm:justify-end gap-2">
@@ -72,6 +72,7 @@ const Hotspot = ({
 
 async function getHotspotRewardsGrowth(
     address,
+    dateRange,
     prevRawRewards = [],
     cursorStr
 ) {
@@ -82,22 +83,21 @@ async function getHotspotRewardsGrowth(
     if (cursorStr) {
         cursor = `&cursor=${cursorStr}`;
     }
-    const res = await fetch(
-        `https://api.helium.io/v1/hotspots/${address}/rewards?max_time=2021-05-25&min_time=2021-05-17${cursor}`
-    );
+    const endpoint = `https://api.helium.io/v1/hotspots/${address}/rewards?min_time=${dateRange.minDate}&max_time=${dateRange.maxDate}${cursor}`;
+    const res = await fetch(endpoint);
     const rawRewards = await res.json();
     const rewards = prevRawRewards.concat(rawRewards.data);
     return await getHotspotRewardsGrowth(
         address,
+        dateRange,
         rewards,
         rawRewards.cursor || null
     );
 }
 
-async function getTotalHotspotRewards(address) {
-    const res = await fetch(
-        `https://api.helium.io/v1/hotspots/${address}/rewards/sum?max_time=2021-05-25&min_time=2020-01-01`
-    );
+async function getTotalHotspotRewards(address, dateRange) {
+    const endpoint = `https://api.helium.io/v1/hotspots/${address}/rewards/sum?max_time=${dateRange.maxDate}&min_time=${dateRange.minDate}`;
+    const res = await fetch(endpoint);
     const rawRewards = await res.json();
     return rawRewards.data.total;
 }
@@ -132,8 +132,10 @@ function incrementRewards(rawRewards) {
 }
 
 function formatTimeStamp(timestamp) {
-    const date = new Date(timestamp);
-    return `${date.getMonth() + 1}/${date.getDate()}/${date.getFullYear()}`;
+    const date = new Date(timestamp.slice(0, -1));
+    return `${date.getMonth() + 1}/${date.getDate()}/${date.getFullYear()} ${(
+        "0" + date.getHours()
+    ).slice(-2)}:${("0" + date.getMinutes()).slice(-2)}`;
 }
 
 // This function gets called at build time
@@ -143,9 +145,11 @@ export async function getServerSideProps({ query }) {
         ? animalHash(hotspotAddress)
         : "Failed to get hotspot address";
     const accountAddress = query.account;
+    const minDate = query.minDate;
+    const maxDate = query.maxDate;
     const [rewardsGrowth, totalRewards, accountTotal] = await Promise.all([
-        getHotspotRewardsGrowth(hotspotAddress),
-        getTotalHotspotRewards(hotspotAddress),
+        getHotspotRewardsGrowth(hotspotAddress, { minDate, maxDate }),
+        getTotalHotspotRewards(hotspotAddress, { minDate, maxDate }),
         getAccountBalance(accountAddress),
     ]);
 
