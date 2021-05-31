@@ -2,7 +2,7 @@ import React from "react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 
-function NavLink({ children, href }) {
+const NavLink = ({ children, href }) => {
     const child = React.Children.only(children);
     const router = useRouter();
     const applyValueToActive = (value, inactiveValue) => {
@@ -20,6 +20,6 @@ function NavLink({ children, href }) {
             })}
         </Link>
     );
-}
+};
 
 export default NavLink;

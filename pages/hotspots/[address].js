@@ -138,7 +138,6 @@ function formatTimeStamp(timestamp) {
 
 // This function gets called at build time
 export async function getServerSideProps({ query }) {
-    debugger;
     const hotspotAddress = query.address;
     const hotspotName = hotspotAddress
         ? animalHash(hotspotAddress)

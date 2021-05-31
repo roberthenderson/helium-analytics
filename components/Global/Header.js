@@ -19,12 +19,12 @@ function classNames(...classes) {
     return classes.filter(Boolean).join(" ");
 }
 
-function Header() {
+const Header = () => {
     return (
         <>
             <Disclosure
                 as="nav"
-                className="sticky top-0 bg-indigo-600 border-b border-indigo-300 border-opacity-25 lg:border-none"
+                className="sticky top-0 z-10 bg-indigo-600 border-b border-indigo-300 border-opacity-25 lg:border-none"
             >
                 {({ open }) => (
                     <>
@@ -263,6 +263,6 @@ function Header() {
             </Disclosure>
         </>
     );
-}
+};
 
 export default Header;

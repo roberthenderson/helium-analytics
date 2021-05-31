@@ -1,7 +1,7 @@
 import React from "react";
 import Flatpickr from "react-flatpickr";
 
-function Datepicker() {
+const Datepicker = () => {
     const options = {
         mode: "range",
         static: true,
@@ -38,6 +38,6 @@ function Datepicker() {
             </div>
         </>
     );
-}
+};
 
 export default Datepicker;

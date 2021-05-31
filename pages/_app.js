@@ -5,7 +5,7 @@ import Loading from "../components/Global/Loading";
 import Layout from "../components/Global/Layout";
 import "../styles/globals.scss";
 
-function HeliumAnalytics({ Component, pageProps }) {
+const HeliumAnalytics = ({ Component, pageProps }) => {
     const [loading, setLoading] = useState(false);
 
     Router.events.on("routeChangeStart", () => {
@@ -27,6 +27,6 @@ function HeliumAnalytics({ Component, pageProps }) {
             {loading && <Loading />}
         </>
     );
-}
+};
 
 export default HeliumAnalytics;

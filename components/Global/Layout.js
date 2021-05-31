@@ -1,6 +1,6 @@
 import Header from "./Header";
 
-function Layout({ children }) {
+const Layout = ({ children }) => {
     return (
         <>
             <div className="layout min-h-screen bg-gray-100">
@@ -13,6 +13,6 @@ function Layout({ children }) {
             </div>
         </>
     );
-}
+};
 
 export default Layout;
