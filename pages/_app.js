@@ -8,8 +8,8 @@ import PropTypes from 'prop-types';
 
 const HeliumAnalytics = ({ Component, pageProps }) => {
     HeliumAnalytics.propTypes = {
-        Component: PropTypes.node.isRequired,
-        pageProps: PropTypes.node.isRequired
+        Component: PropTypes.func.isRequired,
+        pageProps: PropTypes.object.isRequired
     };
     const [loading, setLoading] = useState(false);
 

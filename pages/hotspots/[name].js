@@ -1,13 +1,13 @@
 import { useRouter } from 'next/router';
-import Utils from '../../utils/utils';
+import DateUtils from '../../utils/date';
 import Datepicker from '../../components/Actions/Datepicker';
 import RewardsChart from '../../components/Charts/RewardsChart';
 import PropTypes from 'prop-types';
 
 const BONES_TO_HNT_CONVERSION = 0.00000001;
-const Hotspot = ({ hotspotName, rewardsGrowth, totalRewards, accountTotal }) => {
-    Hotspot.propTypes = {
-        hotspotName: PropTypes.array.isRequired,
+const HotspotName = ({ hotspotName, rewardsGrowth, totalRewards, accountTotal }) => {
+    HotspotName.propTypes = {
+        hotspotName: PropTypes.string.isRequired,
         rewardsGrowth: PropTypes.object.isRequired,
         totalRewards: PropTypes.number.isRequired,
         accountTotal: PropTypes.number.isRequired
@@ -88,7 +88,7 @@ async function getTotalHotspotRewards(address, dateRange) {
     if (!dateRange) {
         return;
     }
-    const endpoint = `https://api.helium.io/v1/hotspots/${address}/rewards/sum?max_time=${dateRange.maxDate}&min_time=${dateRange.minDate}`;
+    const endpoint = `https://api.helium.io/v1/hotspots/${address}/rewards/sum?min_time=${dateRange.minDate}&max_time=${dateRange.maxDate}`;
     const res = await fetch(endpoint);
     const rawRewards = await res.json();
     return rawRewards.data.total;
@@ -128,50 +128,6 @@ function formatTimeStampForDisplay(timestamp) {
     ).slice(-2)}:${('0' + date.getMinutes()).slice(-2)}`;
 }
 
-function formatDateForAPI(date) {
-    const dateStrMap = {
-        year: date.getFullYear(),
-        month: ('0' + (date.getMonth() + 1)).slice(-2),
-        date: ('0' + date.getDate()).slice(-2),
-        hours: ('0' + date.getHours()).slice(-2),
-        minutes: ('0' + date.getMinutes()).slice(-2),
-        seconds: ('0' + date.getSeconds()).slice(-2)
-    };
-    let dateStr = '';
-    Object.keys(dateStrMap).forEach((key) => {
-        const value = dateStrMap[key];
-        dateStr += value;
-        if (key === 'year' || key === 'month') {
-            dateStr += '-';
-        }
-        if (key === 'date') {
-            dateStr += 'T';
-        }
-        if (key === 'hours' || key === 'minutes') {
-            dateStr += ':';
-        }
-    });
-    return dateStr + '.000000Z';
-}
-
-function convertDateToGMT(dateStr, isMaxDate) {
-    if (!dateStr) {
-        dateStr = createDateStr(isMaxDate);
-    }
-    const timeStr = isMaxDate ? '23:59:59' : '00:00:00';
-    const date = new Date(`${dateStr} ${timeStr}`);
-    return formatDateForAPI(date);
-}
-
-function createDateStr(isMaxDate) {
-    const today = new Date();
-    let aWeekAgo = new Date();
-    aWeekAgo.setDate(new Date().getDate() - 7);
-    const date = isMaxDate ? Utils.lz(aWeekAgo.getDate()) : Utils.lz(today.getDate());
-    const month = isMaxDate ? Utils.lz(aWeekAgo.getMonth() + 1) : Utils.lz(today.getMonth() + 1);
-    return `${today.getFullYear()}-${month}-${date}`;
-}
-
 async function getHotspotAddress(hotspotName) {
     const res = await fetch(`https://api.helium.io/v1/hotspots/name?search=${hotspotName}`);
     const hotspots = await res.json();
@@ -190,8 +146,8 @@ export async function getServerSideProps({ query }) {
     const hotspotName = query.name;
     const hotspotAddress = await getHotspotAddress(hotspotName);
     const accountAddress = query.account;
-    const minDate = convertDateToGMT(query.minDate);
-    const maxDate = convertDateToGMT(query.maxDate, true);
+    const minDate = DateUtils.convertDateToGMT(query.minDate);
+    const maxDate = DateUtils.convertDateToGMT(query.maxDate, true);
     const [rewardsGrowth, totalRewards, accountTotal] = await Promise.all([
         getHotspotRewardsGrowth(hotspotAddress, { minDate, maxDate }),
         getTotalHotspotRewards(hotspotAddress, { minDate, maxDate }),
@@ -210,4 +166,4 @@ export async function getServerSideProps({ query }) {
     };
 }
 
-export default Hotspot;
+export default HotspotName;
