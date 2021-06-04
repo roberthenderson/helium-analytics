@@ -1,9 +1,13 @@
-import Head from "next/head";
-import Select from "react-select";
-import { useRouter } from "next/router";
-import animalHash from "angry-purple-tiger";
+import Head from 'next/head';
+import Select from 'react-select';
+import { useRouter } from 'next/router';
+import animalHash from 'angry-purple-tiger';
+import PropTypes from 'prop-types';
 
 function Validators({ validators }) {
+    Validators.propTypes = {
+        validators: PropTypes.array.isRequired
+    };
     const router = useRouter();
     const handleChange = (validator) => {
         router.push(`/validators/${validator.value}`);
@@ -20,8 +24,7 @@ function Validators({ validators }) {
                 <Select
                     instanceId="select-a-validator"
                     options={validators}
-                    onChange={handleChange}
-                ></Select>
+                    onChange={handleChange}></Select>
             </main>
 
             <footer>Built by Robert</footer>
@@ -34,7 +37,7 @@ function _formatValidators(rawValidatorsData) {
     rawValidatorsData.forEach((validator) => {
         formattedValidators.push({
             label: animalHash(validator.address),
-            value: validator.address,
+            value: validator.address
         });
     });
     return formattedValidators;
@@ -42,7 +45,7 @@ function _formatValidators(rawValidatorsData) {
 
 // This function gets called at build time
 export async function getStaticProps() {
-    const res = await fetch("https://testnet-api.helium.wtf/v1/validators");
+    const res = await fetch('https://testnet-api.helium.wtf/v1/validators');
     const rawValidators = await res.json();
     const validators = _formatValidators(rawValidators.data);
     // console.log("Validators:", validators);
@@ -51,8 +54,8 @@ export async function getStaticProps() {
     // will receive `validators` as a prop at build time
     return {
         props: {
-            validators,
-        },
+            validators
+        }
     };
 }
 

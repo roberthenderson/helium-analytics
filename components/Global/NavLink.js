@@ -1,8 +1,13 @@
-import React from "react";
-import Link from "next/link";
-import { useRouter } from "next/router";
+import React from 'react';
+import Link from 'next/link';
+import { useRouter } from 'next/router';
+import PropTypes from 'prop-types';
 
 const NavLink = ({ children, href }) => {
+    NavLink.propTypes = {
+        children: PropTypes.node.isRequired,
+        href: PropTypes.string.isRequired
+    };
     const child = React.Children.only(children);
     const router = useRouter();
     const applyValueToActive = (value, inactiveValue) => {
@@ -12,11 +17,11 @@ const NavLink = ({ children, href }) => {
     return (
         <Link href={href}>
             {React.cloneElement(child, {
-                "aria-current": applyValueToActive("page", null),
+                'aria-current': applyValueToActive('page', null),
                 className: applyValueToActive(
-                    "bg-indigo-700 text-white rounded-md py-2 px-3 text-sm font-medium",
-                    "text-white hover:bg-indigo-500 hover:bg-opacity-75 rounded-md py-2 px-3 text-sm font-medium"
-                ),
+                    'bg-indigo-700 text-white rounded-md py-2 px-3 text-sm font-medium',
+                    'text-white hover:bg-indigo-500 hover:bg-opacity-75 rounded-md py-2 px-3 text-sm font-medium'
+                )
             })}
         </Link>
     );

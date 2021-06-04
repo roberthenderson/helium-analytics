@@ -1,22 +1,22 @@
-import { Fragment } from "react";
-import { Disclosure, Menu, Transition } from "@headlessui/react";
-import NavLink from "./NavLink";
-import { SearchIcon } from "@heroicons/react/solid";
-import { BellIcon, MenuIcon, XIcon } from "@heroicons/react/outline";
+import { Fragment } from 'react';
+import { Disclosure, Menu, Transition } from '@headlessui/react';
+import NavLink from './NavLink';
+import { SearchIcon } from '@heroicons/react/solid';
+import { BellIcon, MenuIcon, XIcon } from '@heroicons/react/outline';
 
 const navigation = [
-    { label: "Dashboard", href: "/" },
-    { label: "Hotspots", href: "/hotspots" },
-    { label: "Validators", href: "/validators" },
+    { label: 'Dashboard', href: '/' },
+    { label: 'Hotspots', href: '/hotspots' },
+    { label: 'Validators', href: '/validators' }
 ];
 const profile = [
-    { label: "Your Account", href: "#" },
-    { label: "Settings", href: "#" },
-    { label: "Sign out", href: "#" },
+    { label: 'Your Account', href: '#' },
+    { label: 'Settings', href: '#' },
+    { label: 'Sign out', href: '#' }
 ];
 
 function classNames(...classes) {
-    return classes.filter(Boolean).join(" ");
+    return classes.filter(Boolean).join(' ');
 }
 
 const Header = () => {
@@ -24,8 +24,7 @@ const Header = () => {
         <>
             <Disclosure
                 as="nav"
-                className="sticky top-0 z-10 bg-indigo-600 border-b border-indigo-300 border-opacity-25 lg:border-none"
-            >
+                className="sticky top-0 z-10 bg-indigo-600 border-b border-indigo-300 border-opacity-25 lg:border-none">
                 {({ open }) => (
                     <>
                         <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8">
@@ -44,19 +43,14 @@ const Header = () => {
                                                 itemIdx === 0 ? (
                                                     <Fragment key={item.label}>
                                                         {/* Current: "bg-indigo-700 text-white", Default: "text-white hover:bg-indigo-500 hover:bg-opacity-75" */}
-                                                        <NavLink
-                                                            href={item.href}
-                                                        >
+                                                        <NavLink href={item.href}>
                                                             <a className="bg-indigo-700 text-white rounded-md py-2 px-3 text-sm font-medium">
                                                                 {item.label}
                                                             </a>
                                                         </NavLink>
                                                     </Fragment>
                                                 ) : (
-                                                    <NavLink
-                                                        key={item.label}
-                                                        href={item.href}
-                                                    >
+                                                    <NavLink key={item.label} href={item.href}>
                                                         <a className="text-white hover:bg-indigo-500 hover:bg-opacity-75 rounded-md py-2 px-3 text-sm font-medium">
                                                             {item.label}
                                                         </a>
@@ -68,10 +62,7 @@ const Header = () => {
                                 </div>
                                 <div className="flex-1 px-2 flex justify-center lg:ml-6 lg:justify-end">
                                     <div className="max-w-lg w-full lg:max-w-xs">
-                                        <label
-                                            htmlFor="search"
-                                            className="sr-only"
-                                        >
+                                        <label htmlFor="search" className="sr-only">
                                             Search
                                         </label>
                                         <div className="relative text-gray-400 focus-within:text-gray-600">
@@ -94,14 +85,9 @@ const Header = () => {
                                 <div className="flex lg:hidden">
                                     {/* Mobile menu button */}
                                     <Disclosure.Button className="bg-indigo-600 p-2 rounded-md inline-flex items-center justify-center text-indigo-200 hover:text-white hover:bg-indigo-500 hover:bg-opacity-75 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-indigo-600 focus:ring-white">
-                                        <span className="sr-only">
-                                            Open main menu
-                                        </span>
+                                        <span className="sr-only">Open main menu</span>
                                         {open ? (
-                                            <XIcon
-                                                className="block h-6 w-6"
-                                                aria-hidden="true"
-                                            />
+                                            <XIcon className="block h-6 w-6" aria-hidden="true" />
                                         ) : (
                                             <MenuIcon
                                                 className="block h-6 w-6"
@@ -113,20 +99,12 @@ const Header = () => {
                                 <div className="hidden lg:block lg:ml-4">
                                     <div className="flex items-center">
                                         <button className="bg-indigo-600 flex-shrink-0 rounded-full p-1 text-indigo-200 hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-indigo-600 focus:ring-white">
-                                            <span className="sr-only">
-                                                View notifications
-                                            </span>
-                                            <BellIcon
-                                                className="h-6 w-6"
-                                                aria-hidden="true"
-                                            />
+                                            <span className="sr-only">View notifications</span>
+                                            <BellIcon className="h-6 w-6" aria-hidden="true" />
                                         </button>
 
                                         {/* Profile dropdown */}
-                                        <Menu
-                                            as="div"
-                                            className="ml-3 relative flex-shrink-0"
-                                        >
+                                        <Menu as="div" className="ml-3 relative flex-shrink-0">
                                             {({ open }) => (
                                                 <>
                                                     <div>
@@ -149,41 +127,26 @@ const Header = () => {
                                                         enterTo="transform opacity-100 scale-100"
                                                         leave="transition ease-in duration-75"
                                                         leaveFrom="transform opacity-100 scale-100"
-                                                        leaveTo="transform opacity-0 scale-95"
-                                                    >
+                                                        leaveTo="transform opacity-0 scale-95">
                                                         <Menu.Items
                                                             static
-                                                            className="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 focus:outline-none"
-                                                        >
-                                                            {profile.map(
-                                                                (item) => (
-                                                                    <Menu.Item
-                                                                        key={
-                                                                            item.label
-                                                                        }
-                                                                    >
-                                                                        {({
-                                                                            active,
-                                                                        }) => (
-                                                                            <NavLink
-                                                                                href={
-                                                                                    item.href
-                                                                                }
-                                                                                className={classNames(
-                                                                                    active
-                                                                                        ? "bg-gray-100"
-                                                                                        : "",
-                                                                                    "block py-2 px-4 text-sm text-gray-700"
-                                                                                )}
-                                                                            >
-                                                                                {
-                                                                                    item.label
-                                                                                }
-                                                                            </NavLink>
-                                                                        )}
-                                                                    </Menu.Item>
-                                                                )
-                                                            )}
+                                                            className="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 focus:outline-none">
+                                                            {profile.map((item) => (
+                                                                <Menu.Item key={item.label}>
+                                                                    {({ active }) => (
+                                                                        <NavLink
+                                                                            href={item.href}
+                                                                            className={classNames(
+                                                                                active
+                                                                                    ? 'bg-gray-100'
+                                                                                    : '',
+                                                                                'block py-2 px-4 text-sm text-gray-700'
+                                                                            )}>
+                                                                            {item.label}
+                                                                        </NavLink>
+                                                                    )}
+                                                                </Menu.Item>
+                                                            ))}
                                                         </Menu.Items>
                                                     </Transition>
                                                 </>
@@ -202,8 +165,7 @@ const Header = () => {
                                             {/* Current: "bg-indigo-700 text-white", Default: "text-white hover:bg-indigo-500 hover:bg-opacity-75" */}
                                             <NavLink
                                                 href={item.href}
-                                                className="bg-indigo-700 text-white block rounded-md py-2 px-3 text-base font-medium"
-                                            >
+                                                className="bg-indigo-700 text-white block rounded-md py-2 px-3 text-base font-medium">
                                                 {item.label}
                                             </NavLink>
                                         </Fragment>
@@ -211,8 +173,7 @@ const Header = () => {
                                         <NavLink
                                             key={item.label}
                                             href={item.href}
-                                            className="text-white hover:bg-indigo-500 hover:bg-opacity-75 block rounded-md py-2 px-3 text-base font-medium"
-                                        >
+                                            className="text-white hover:bg-indigo-500 hover:bg-opacity-75 block rounded-md py-2 px-3 text-base font-medium">
                                             {item.label}
                                         </NavLink>
                                     )
@@ -236,13 +197,8 @@ const Header = () => {
                                         </div>
                                     </div>
                                     <button className="ml-auto bg-indigo-600 flex-shrink-0 rounded-full p-1 text-indigo-200 hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-indigo-600 focus:ring-white">
-                                        <span className="sr-only">
-                                            View notifications
-                                        </span>
-                                        <BellIcon
-                                            className="h-6 w-6"
-                                            aria-hidden="true"
-                                        />
+                                        <span className="sr-only">View notifications</span>
+                                        <BellIcon className="h-6 w-6" aria-hidden="true" />
                                     </button>
                                 </div>
                                 <div className="mt-3 px-2 space-y-1">
@@ -250,8 +206,7 @@ const Header = () => {
                                         <NavLink
                                             key={item.label}
                                             href={item.href}
-                                            className="block rounded-md py-2 px-3 text-base font-medium text-white hover:bg-indigo-500 hover:bg-opacity-75"
-                                        >
+                                            className="block rounded-md py-2 px-3 text-base font-medium text-white hover:bg-indigo-500 hover:bg-opacity-75">
                                             {item.label}
                                         </NavLink>
                                     ))}

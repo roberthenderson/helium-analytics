@@ -1,17 +1,22 @@
-import React, { useState } from "react";
-import Router from "next/router";
-import Head from "next/head";
-import Loading from "../components/Global/Loading";
-import Layout from "../components/Global/Layout";
-import "../styles/globals.scss";
+import React, { useState } from 'react';
+import Router from 'next/router';
+import Head from 'next/head';
+import Loading from '../components/Global/Loading';
+import Layout from '../components/Global/Layout';
+import '../styles/globals.scss';
+import PropTypes from 'prop-types';
 
 const HeliumAnalytics = ({ Component, pageProps }) => {
+    HeliumAnalytics.propTypes = {
+        Component: PropTypes.node.isRequired,
+        pageProps: PropTypes.node.isRequired
+    };
     const [loading, setLoading] = useState(false);
 
-    Router.events.on("routeChangeStart", () => {
+    Router.events.on('routeChangeStart', () => {
         setLoading(true);
     });
-    Router.events.on("routeChangeComplete", () => {
+    Router.events.on('routeChangeComplete', () => {
         setLoading(false);
     });
 

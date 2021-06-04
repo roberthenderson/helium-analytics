@@ -1,17 +1,23 @@
-import { Line, Bar } from "react-chartjs-2";
+import { Line, Bar } from 'react-chartjs-2';
+import PropTypes from 'prop-types';
 
 const RewardsChart = ({ type, dataSetData, dataLabels }) => {
+    RewardsChart.propTypes = {
+        type: PropTypes.string.isRequired,
+        dataSetData: PropTypes.array.isRequired,
+        dataLabels: PropTypes.array.isRequired
+    };
     const data = {
         labels: dataLabels,
         datasets: [
             {
-                label: "Rewards (HNT)",
+                label: 'Rewards (HNT)',
                 data: dataSetData,
                 fill: true,
-                backgroundColor: "rgb(255, 99, 132)",
-                borderColor: "rgba(255, 99, 132, 0.2)",
-            },
-        ],
+                backgroundColor: 'rgb(255, 99, 132)',
+                borderColor: 'rgba(255, 99, 132, 0.2)'
+            }
+        ]
     };
 
     const options = {
@@ -19,17 +25,17 @@ const RewardsChart = ({ type, dataSetData, dataLabels }) => {
             yAxes: [
                 {
                     ticks: {
-                        beginAtZero: true,
-                    },
-                },
-            ],
-        },
+                        beginAtZero: true
+                    }
+                }
+            ]
+        }
     };
 
     let chart;
-    if (type === "line") {
+    if (type === 'line') {
         chart = <Line data={data} options={options} />;
-    } else if (type === "bar") {
+    } else if (type === 'bar') {
         chart = <Bar data={data} options={options} />;
     }
 

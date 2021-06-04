@@ -1,9 +1,13 @@
-import Head from "next/head";
-import Select from "react-select";
-import { useRouter } from "next/router";
-import animalHash from "angry-purple-tiger";
+import Head from 'next/head';
+import Select from 'react-select';
+import { useRouter } from 'next/router';
+import animalHash from 'angry-purple-tiger';
+import PropTypes from 'prop-types';
 
 function Hotspots({ hotspots }) {
+    Hotspots.propTypes = {
+        hotspots: PropTypes.array.isRequired
+    };
     const router = useRouter();
     const handleChange = (hotspot) => {
         router.push(`/hotspots/${hotspot.dashed}`);
@@ -20,8 +24,7 @@ function Hotspots({ hotspots }) {
                 <Select
                     instanceId="select-a-hotspot"
                     options={hotspots}
-                    onChange={handleChange}
-                ></Select>
+                    onChange={handleChange}></Select>
             </main>
 
             <footer>Built by Robert</footer>
@@ -38,7 +41,7 @@ function _formatHotspots(rawHotspotsData) {
             formattedHotspots.push({
                 label: animalHash(hotspot.address),
                 dashed: hotspotDashed,
-                value: hotspot.address,
+                value: hotspot.address
             });
         }
     });
@@ -46,20 +49,20 @@ function _formatHotspots(rawHotspotsData) {
 }
 
 function dashHotspotName(hotspotName) {
-    return hotspotName.toLowerCase().replaceAll(" ", "-");
+    return hotspotName.toLowerCase().replaceAll(' ', '-');
 }
 
 // This function gets called at build time
 export async function getServerSideProps() {
-    const res = await fetch("https://api.helium.io/v1/hotspots");
+    const res = await fetch('https://api.helium.io/v1/hotspots');
     const rawHotspots = await res.json();
     const hotspots = _formatHotspots(rawHotspots.data);
     // console.log("hotspots:", hotspots);
 
     return {
         props: {
-            hotspots,
-        },
+            hotspots
+        }
     };
 }
 

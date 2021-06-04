@@ -1,5 +1,5 @@
-import { useRouter } from "next/router";
-import animalHash from "angry-purple-tiger";
+import { useRouter } from 'next/router';
+import animalHash from 'angry-purple-tiger';
 
 const ValidatorAddress = () => {
     const router = useRouter();
