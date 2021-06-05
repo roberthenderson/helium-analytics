@@ -1,45 +1,51 @@
+import React from 'react';
 import { Line, Bar } from 'react-chartjs-2';
 import PropTypes from 'prop-types';
+import { useHotspotRewards } from '../../hooks/useRequest';
 
-const RewardsChart = ({ type, dataSetData, dataLabels }) => {
+const RewardsChart = ({ type, hotspotAddress }) => {
     RewardsChart.propTypes = {
         type: PropTypes.string.isRequired,
-        dataSetData: PropTypes.array.isRequired,
-        dataLabels: PropTypes.array.isRequired
+        hotspotAddress: PropTypes.string.isRequired
     };
-    const data = {
-        labels: dataLabels,
-        datasets: [
-            {
-                label: 'Rewards (HNT)',
-                data: dataSetData,
-                fill: true,
-                backgroundColor: 'rgb(255, 99, 132)',
-                borderColor: 'rgba(255, 99, 132, 0.2)'
-            }
-        ]
-    };
-
-    const options = {
-        scales: {
-            yAxes: [
+    const { rewards, error, isLoadingMore, size, setSize, isReachingEnd } =
+        useHotspotRewards(hotspotAddress);
+    if (rewards) {
+        const chartData = {
+            labels: rewards.datesInOrder,
+            datasets: [
                 {
-                    ticks: {
-                        beginAtZero: true
-                    }
+                    label: 'Rewards (HNT)',
+                    data: rewards.incrementedRewards,
+                    fill: true,
+                    backgroundColor: 'rgb(255, 99, 132)',
+                    borderColor: 'rgba(255, 99, 132, 0.2)'
                 }
             ]
+        };
+
+        const chartOptions = {
+            scales: {
+                yAxes: [
+                    {
+                        ticks: {
+                            beginAtZero: true
+                        }
+                    }
+                ]
+            }
+        };
+
+        let chart;
+        if (type === 'line') {
+            chart = <Line data={chartData} options={chartOptions} />;
+        } else if (type === 'bar') {
+            chart = <Bar data={chartData} options={chartOptions} />;
         }
-    };
 
-    let chart;
-    if (type === 'line') {
-        chart = <Line data={data} options={options} />;
-    } else if (type === 'bar') {
-        chart = <Bar data={data} options={options} />;
+        return <>{chart}</>;
     }
-
-    return <>{chart}</>;
+    return <>Loading chart...</>;
 };
 
-export default RewardsChart;
+export default React.memo(RewardsChart);

@@ -46,6 +46,12 @@ const DateUtils = {
             }
         });
         return dateStr + '.000000Z';
+    },
+    formatTimeStampForDisplay(timestamp) {
+        const date = new Date(timestamp);
+        return `${date.getMonth() + 1}/${date.getDate()}/${date.getFullYear()} ${(
+            '0' + date.getHours()
+        ).slice(-2)}:${('0' + date.getMinutes()).slice(-2)}`;
     }
 };
 
